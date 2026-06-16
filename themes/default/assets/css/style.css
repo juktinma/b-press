@@ -58,6 +58,9 @@ a:hover {
 
 /* Header */
 .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     width: 100%;
     min-height: var(--header-height, 80px);
     display: flex;
@@ -236,10 +239,23 @@ a:hover {
 
 .post-meta {
     font-size: 0.85rem;
-    color: var(--text-muted);
+    color: #828a99;
     margin-bottom: 15px;
     display: flex;
-    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.post-meta > span {
+    display: inline-flex;
+    align-items: center;
+}
+
+.post-meta > span:not(:last-child)::after {
+    content: "|";
+    margin: 0 12px;
+    color: #d1d5db;
+    font-weight: 400;
 }
 
 .post-excerpt {
@@ -404,8 +420,25 @@ a:hover {
         display: flex;
     }
 
+    .hero-section {
+        padding: 30px 20px;
+    }
+
     .hero-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
+    }
+    
+    .card {
+        padding: 15px;
+    }
+
+    .post-title {
+        font-size: 1.25rem;
+    }
+
+    .post-detail h1.post-title,
+    .page-detail h1.page-title {
+        font-size: 1.6rem;
     }
 }
 

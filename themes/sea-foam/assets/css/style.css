@@ -444,8 +444,25 @@ a:hover {
         display: flex;
     }
 
+    .hero-section {
+        padding: 30px 20px;
+    }
+
     .hero-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .post-title {
+        font-size: 1.25rem;
+    }
+
+    .post-detail h1.post-title,
+    .page-detail h1.page-title {
+        font-size: 1.6rem;
     }
 }
 
