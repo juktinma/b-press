@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS tags (
 CREATE TABLE IF NOT EXISTS posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    slug VARCHAR(255) UNIQUE NOT NULL,
+    slug VARCHAR(191) UNIQUE NOT NULL,
     content TEXT,
     excerpt TEXT,
     cover_image VARCHAR(500),
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS post_tags (
 CREATE TABLE IF NOT EXISTS pages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    slug VARCHAR(255) UNIQUE NOT NULL,
+    slug VARCHAR(191) UNIQUE NOT NULL,
     content TEXT,
     status VARCHAR(50) DEFAULT 'published',
     sort_order INT DEFAULT 0,
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS settings (
 -- 9. theme_settings table
 CREATE TABLE IF NOT EXISTS theme_settings (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    theme_slug VARCHAR(100) NOT NULL,
+    theme_slug VARCHAR(50) NOT NULL,
     `key` VARCHAR(100) NOT NULL,
     `value` TEXT,
     UNIQUE KEY unique_theme_key (theme_slug, `key`)
