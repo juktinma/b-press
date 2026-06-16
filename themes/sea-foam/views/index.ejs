@@ -5,13 +5,13 @@
 <section class="hero-section card">
     <% if (themeConfig.banner_mode === 'image_carousel') { %>
         <div style="text-align:center; padding: 20px 0;">
-            <div style="font-size:3rem; margin-bottom:15px;">🖼️</div>
+            <div style="font-size:3rem; margin-bottom:15px;"><i class="ri-image-line"></i></div>
             <h3>图片轮播展示区</h3>
             <p style="color:var(--text-muted)">（您已切换至图片轮播模式，占位示意图）</p>
         </div>
     <% } else if (themeConfig.banner_mode === 'post_carousel') { %>
         <div style="text-align:center; padding: 20px 0;">
-            <div style="font-size:3rem; margin-bottom:15px;">📰</div>
+            <div style="font-size:3rem; margin-bottom:15px;"><i class="ri-article-line"></i></div>
             <h3>精选文章推荐轮播</h3>
             <p style="color:var(--text-muted)">（您已切换至文章轮播模式，占位示意图）</p>
         </div>
@@ -35,12 +35,12 @@
             <article class="post-card card">
                 <h2 class="post-title"><a href="/post/<%= post.slug %>"><%= post.title %></a></h2>
                 <div class="post-meta">
-                    <span>👤 <%= site.computed_author_name %></span>
-                    <span>📅 <%= new Date(post.created_at).toLocaleDateString() %></span>
+                    <span><i class="ri-user-line"></i> <%= site.computed_author_name %></span>
+                    <span><i class="ri-calendar-line"></i> <%= new Date(post.created_at).toLocaleDateString() %></span>
                     <% if (post.category_name) { %>
-                        <span>📂 <a href="/category/<%= post.category_slug %>" style="color: inherit; text-decoration: underline;"><%= post.category_name %></a></span>
+                        <span><i class="ri-folder-2-line"></i> <a href="/category/<%= post.category_slug %>" style="color: inherit; text-decoration: underline;"><%= post.category_name %></a></span>
                     <% } %>
-                    <span>👀 <%= post.views %> 次阅读</span>
+                    <span><i class="ri-eye-line"></i> <%= post.views %> 次阅读</span>
                 </div>
                 <div class="post-excerpt">
                     <%= post.excerpt %>

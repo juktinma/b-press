@@ -41,7 +41,7 @@
 
             <% if (post.tags && post.tags.length > 0) { %>
             <div class="post-tags" style="margin-top: 30px; padding-top: 15px; border-top: 1px dashed var(--border-color); display: flex; flex-wrap: wrap; align-items: center; gap: 4px;">
-                <span style="font-weight: 600; margin-right: 8px; color: var(--text-muted);">🏷️ 标签:</span>
+                <span style="font-weight: 600; margin-right: 8px; color: var(--text-muted);"><i class="ri-price-tag-3-line"></i> 标签:</span>
                 <% post.tags.forEach(tag => { %>
                     <a href="/tag/<%= encodeURIComponent(tag) %>" class="sea-foam-tag"><%= tag %></a>
                 <% }) %>
@@ -98,11 +98,11 @@
                 <li class="comment-item" id="comment-${comment.id}" style="border-bottom: 1px dashed var(--border-color); padding-bottom: 15px;">
                     <div class="comment-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px;">
                         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                            <strong style="color: var(--primary); font-size: 0.95rem;">👤 ${escapeHTML(comment.author_name)}</strong>
-                            ${comment.author_url ? `<a href="${escapeHTML(comment.author_url)}" target="_blank" rel="nofollow" style="font-size: 0.8rem; color: var(--text-muted); text-decoration: underline;">🌐 网站</a>` : ''}
-                            <span style="color: var(--text-muted); font-size: 0.8rem;">📅 ${new Date(comment.created_at).toLocaleString()}</span>
+                            <strong style="color: var(--primary); font-size: 0.95rem;"><i class="ri-user-line"></i> ${escapeHTML(comment.author_name)}</strong>
+                            ${comment.author_url ? `<a href="${escapeHTML(comment.author_url)}" target="_blank" rel="nofollow" style="font-size: 0.8rem; color: var(--text-muted); text-decoration: underline;"><i class="ri-global-line"></i> 网站</a>` : ''}
+                            <span style="color: var(--text-muted); font-size: 0.8rem;"><i class="ri-calendar-line"></i> ${new Date(comment.created_at).toLocaleString()}</span>
                         </div>
-                        <a href="#comment-form-title" onclick="appReplyComment(${comment.id}, '${escapeHTML(comment.author_name)}')" style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;">💬 回复</a>
+                        <a href="#comment-form-title" onclick="appReplyComment(${comment.id}, '${escapeHTML(comment.author_name)}')" style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;"><i class="ri-chat-3-line"></i> 回复</a>
                     </div>
                     <div class="comment-body" style="font-size: 0.95rem; color: var(--text-main); line-height: 1.6; white-space: pre-wrap; word-break: break-all;">${escapeHTML(comment.content)}</div>
                 `;
@@ -119,7 +119,7 @@
         %>
 
         <div class="comments-section card" style="margin-top: 30px; padding: 25px;">
-            <h3 style="margin-bottom: 20px; font-size: 1.3rem; border-bottom: 2px solid var(--primary); padding-bottom: 8px; display: inline-block;">💬 评论交流 (<%= (function countComments(list) { let count = 0; list.forEach(c => { count += 1 + countComments(c.children || []); }); return count; })(comments) %>)</h3>
+            <h3 style="margin-bottom: 20px; font-size: 1.3rem; border-bottom: 2px solid var(--primary); padding-bottom: 8px; display: inline-block;"><i class="ri-chat-3-line"></i> 评论交流 (<%= (function countComments(list) { let count = 0; list.forEach(c => { count += 1 + countComments(c.children || []); }); return count; })(comments) %>)</h3>
 
             <!-- Comment List -->
             <% if (comments.length === 0) { %>
@@ -158,7 +158,7 @@
                     </div>
 
                     <div style="text-align: right;">
-                        <button type="submit" style="padding: 12px 35px; border-radius: 25px; background: var(--primary); color: white; border: none; cursor: pointer; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3); transition: transform 0.2s, box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 15px rgba(14, 165, 233, 0.4)'" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 10px rgba(14, 165, 233, 0.3)'">✨ 发布评论</button>
+                        <button type="submit" style="padding: 12px 35px; border-radius: 25px; background: var(--primary); color: white; border: none; cursor: pointer; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3); transition: transform 0.2s, box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 15px rgba(14, 165, 233, 0.4)'" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 10px rgba(14, 165, 233, 0.3)'"><i class="ri-send-plane-fill"></i> 发布评论</button>
                     </div>
                 </form>
             </div>
