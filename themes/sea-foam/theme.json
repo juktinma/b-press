@@ -1,0 +1,68 @@
+{
+  "name": "Sea Foam",
+  "slug": "sea-foam",
+  "version": "1.0.0",
+  "author": "Bgsn",
+  "description": "极简毛玻璃风格博客主题 (纯色/渐变背景)",
+  "customizable": {
+    "show_banner": {
+      "label": "显示顶部 Banner",
+      "type": "boolean",
+      "default": true
+    },
+    "banner_mode": {
+      "label": "Banner 内容模式",
+      "type": "select",
+      "options": [
+        {"label": "默认文字", "value": "text"},
+        {"label": "图片轮播", "value": "image_carousel"},
+        {"label": "文章轮播", "value": "post_carousel"}
+      ],
+      "default": "text"
+    },
+    "banner_html": {
+      "label": "自定义 Banner HTML代码",
+      "type": "textarea",
+      "default": "<h1 class=\"hero-title\">👋 欢迎来到我的博客</h1>\n<p class=\"hero-subtitle\">记录生活碎片、技术探索与安静的想法。</p>\n<div class=\"hitokoto-box\" id=\"hitokoto-container\">正在捞一句今日份的灵感...</div>"
+    },
+    "primary_color": {
+      "label": "主色调",
+      "type": "color",
+      "default": "#00b4db"
+    },
+    "bg_gradient_start": {
+      "label": "背景渐变起始色",
+      "type": "color",
+      "default": "#f0f9ff"
+    },
+    "bg_gradient_end": {
+      "label": "背景渐变结束色",
+      "type": "color",
+      "default": "#bae6fd"
+    },
+    "card_radius": {
+      "label": "卡片圆角",
+      "type": "range",
+      "min": 0,
+      "max": 40,
+      "default": 24
+    },
+    "header_height": {
+      "label": "导航栏高度",
+      "type": "range",
+      "min": 60,
+      "max": 140,
+      "default": 90
+    },
+    "cover_in_title_bg": {
+      "label": "文章头图融入标题背景",
+      "type": "boolean",
+      "default": false
+    },
+    "show_page_sidebar": {
+      "label": "独立页面显示侧边栏",
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

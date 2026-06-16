@@ -1,0 +1,88 @@
+<%- include('partials/header') %>
+
+<!-- Hero Section -->
+<% if (themeConfig.show_banner) { %>
+<section class="hero-section card">
+    <% if (themeConfig.banner_mode === 'image_carousel') { %>
+        <div style="text-align:center; padding: 20px 0;">
+            <div style="font-size:3rem; margin-bottom:15px;">🖼️</div>
+            <h3>图片轮播展示区</h3>
+            <p style="color:var(--text-muted)">（您已切换至图片轮播模式，占位示意图）</p>
+        </div>
+    <% } else if (themeConfig.banner_mode === 'post_carousel') { %>
+        <div style="text-align:center; padding: 20px 0;">
+            <div style="font-size:3rem; margin-bottom:15px;">📰</div>
+            <h3>精选文章推荐轮播</h3>
+            <p style="color:var(--text-muted)">（您已切换至文章轮播模式，占位示意图）</p>
+        </div>
+    <% } else { %>
+        <%- themeConfig.banner_html %>
+    <% } %>
+</section>
+<% } %>
+
+<!-- Main Grid Layout -->
+<div class="layout-grid">
+    <!-- Left Column: Posts -->
+    <main class="post-list">
+        <% if (posts.length === 0) { %>
+            <div class="card" style="padding: 40px; text-align: center;">
+                <p>暂无文章，请先在后台发布。</p>
+            </div>
+        <% } %>
+
+        <% posts.forEach(post => { %>
+            <article class="post-card card">
+                <% if (post.cover_image && post.show_cover_in_index) { %>
+                <div class="post-card-inner">
+                    <div class="post-card-content">
+                <% } %>
+                <h2 class="post-title"><a href="/post/<%= post.slug %>"><%= post.title %></a></h2>
+                <div class="post-meta">
+                    <span><i class="ri-user-line"></i> <%= site.computed_author_name %></span>
+                    <span><i class="ri-calendar-line"></i> <%= new Date(post.created_at).toLocaleDateString() %></span>
+                    <% if (post.category_name) { %>
+                        <span><i class="ri-folder-line"></i> <a href="/category/<%= post.category_slug %>" style="color: inherit; text-decoration: underline;"><%= post.category_name %></a></span>
+                    <% } %>
+                    <span><i class="ri-eye-line"></i> <%= post.views %> 次阅读</span>
+                </div>
+                <div class="post-excerpt">
+                    <%= post.excerpt %>
+                </div>
+                <a href="/post/<%= post.slug %>" class="read-more">阅读全文 →</a>
+                <% if (post.cover_image && post.show_cover_in_index) { %>
+                    </div>
+                    <div class="post-card-cover">
+                        <img src="<%= post.cover_image %>" alt="<%= post.title %>" loading="lazy">
+                    </div>
+                </div>
+                <% } %>
+            </article>
+        <% }) %>
+
+        <div class="pagination" style="margin-top: 20px;">
+            <% if (pagination.current > 1) { %>
+                <a href="?page=<%= pagination.current - 1 %>" class="btn card">上一页</a>
+            <% } %>
+            <% if (pagination.current < pagination.total) { %>
+                <a href="?page=<%= pagination.current + 1 %>" class="btn card">下一页</a>
+            <% } %>
+        </div>
+    </main>
+
+    <!-- Right Column: Sidebar -->
+    <%- include('partials/sidebar') %>
+</div>
+
+<!-- Simple Hitokoto Script -->
+<script>
+    fetch('https://v1.hitokoto.cn/?c=i')
+        .then(response => response.json())
+        .then(data => {
+            const hitokoto = document.getElementById('hitokoto-container');
+            hitokoto.innerText = data.hitokoto;
+        })
+        .catch(console.error);
+</script>
+
+<%- include('partials/footer') %>

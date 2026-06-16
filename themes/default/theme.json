@@ -1,0 +1,72 @@
+{
+    "name": "极简留白 (Default)",
+    "slug": "default",
+    "version": "1.0.0",
+    "description": "一个极其简约的纯白主题，无任何冗余修饰，专注于阅读体验。",
+    "author": "Bgsn",
+    "customizable": {
+        "show_banner": {
+            "label": "显示顶部 Banner",
+            "type": "boolean",
+            "default": true
+        },
+        "banner_mode": {
+            "label": "Banner 内容模式",
+            "type": "select",
+            "options": [
+                {"label": "默认文字", "value": "text"},
+                {"label": "图片轮播", "value": "image_carousel"},
+                {"label": "文章轮播", "value": "post_carousel"}
+            ],
+            "default": "text"
+        },
+        "banner_html": {
+            "label": "自定义 Banner HTML代码",
+            "type": "textarea",
+            "default": "<h1 class=\"hero-title\">👋 欢迎来到我的博客</h1>\n<p class=\"hero-subtitle\">记录生活碎片、技术探索与安静的想法。</p>\n<div class=\"hitokoto-box\" id=\"hitokoto-container\">正在捞一句今日份的灵感...</div>"
+        },
+        "bg_color": {
+            "label": "页面背景颜色",
+            "type": "color",
+            "default": "#ffffff"
+        },
+        "card_bg": {
+            "label": "卡片背景颜色",
+            "type": "color",
+            "default": "#ffffff"
+        },
+        "primary_color": {
+            "label": "主题主色调",
+            "type": "color",
+            "default": "#111111"
+        },
+        "text_color": {
+            "label": "主要文字颜色",
+            "type": "color",
+            "default": "#222222"
+        },
+        "border_color": {
+            "label": "边框颜色",
+            "type": "color",
+            "default": "#e0e0e0"
+        },
+        "card_radius": {
+            "label": "全局圆角大小",
+            "type": "range",
+            "default": 0,
+            "min": 0,
+            "max": 20
+        },
+        "post_cover_mode": {
+            "label": "文章头图展示模式",
+            "type": "select",
+            "options": [
+                {"label": "在文章中显示头图 (默认)", "value": "default"},
+                {"label": "文章中不显示头图", "value": "hide"},
+                {"label": "文章头图放在标题上方", "value": "above_title"},
+                {"label": "文章头图放在左边且sidebar放左边接在头图下方", "value": "left_cover_sidebar_left"}
+            ],
+            "default": "default"
+        }
+    }
+}

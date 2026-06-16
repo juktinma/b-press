@@ -1,0 +1,16 @@
+    </div> <!-- end .main-wrapper container -->
+    <footer class="site-footer">
+        <% if (site.footer_html) { %>
+            <%- site.footer_html %>
+        <% } else { %>
+            <p>&copy; <%= new Date().getFullYear() %> <%= site.site_title %>. Designed with 💙 by B-Press.</p>
+        <% } %>
+    </footer>
+
+    <script>
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('site-nav').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+        body, input, select, textarea, button {
+            font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .install-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            margin: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        .header p {
+            color: var(--text-muted);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #0284c7;
+        }
+        .mysql-fields {
+            display: none;
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="install-card">
+        <div class="header">
+            <h1>欢迎使用 B-Press 🚀</h1>
+            <p>只需几步，开启您的博客之旅</p>
+        </div>
+        <form id="installForm">
+            <div class="form-group">
+                <label>数据库引擎</label>
+                <select id="dbType" class="form-control" onchange="toggleMySQLFields()">
+                    <option value="sqlite">SQLite (轻量免配置，推荐)</option>
+                    <option value="mysql">MySQL (高性能，适合大数据量)</option>
+                </select>
+            </div>
+            
+            <div class="mysql-fields" id="mysqlFields">
+                <div style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 0.9rem; border: 1px solid #ffeeba;">
+                    ⚠️ <b>注意：</b>请确保您的 MySQL 允许远程连接，或者服务与数据库在同一内网且端口已开放。如果测试连接超时，安装将失败，此时强烈建议退回使用 SQLite。
+                </div>
+                <div class="form-group">
+                    <label>数据库主机 (Host)</label>
+                    <input type="text" id="dbHost" class="form-control" value="localhost">
+                </div>
+                <div class="form-group">
+                    <label>端口 (Port)</label>
+                    <input type="number" id="dbPort" class="form-control" value="3306">
+                </div>
+                <div class="form-group">
+                    <label>数据库名 (DB Name)</label>
+                    <input type="text" id="dbName" class="form-control" value="bgsnblog">
+                </div>
+                <div class="form-group">
+                    <label>用户名 (User)</label>
+                    <input type="text" id="dbUser" class="form-control" value="root">
+                </div>
+                <div class="form-group">
+                    <label>密码 (Password)</label>
+                    <input type="password" id="dbPass" class="form-control">
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 25px 0;">
+            <h3 style="margin-bottom: 15px; font-size: 1.1rem;">博客设置</h3>
+
+            <div class="form-group">
+                <label>博客网站名称</label>
+                <input type="text" id="siteTitle" class="form-control" placeholder="我的个人博客" required>
+            </div>
+            
+            <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 25px 0;">
+            <h3 style="margin-bottom: 15px; font-size: 1.1rem;">站长个人资料</h3>
+
+            <div class="form-group">
+                <label>博主昵称</label>
+                <input type="text" id="authorName" class="form-control" placeholder="例如：Admin" required>
+            </div>
+            <div class="form-group">
+                <label>个人简介</label>
+                <input type="text" id="authorBio" class="form-control" placeholder="例如：热爱代码与生活的创造者。">
+            </div>
+            <div class="form-group">
+                <label>管理员邮箱</label>
+                <input type="email" id="adminEmail" class="form-control" placeholder="用于接收通知及关联Gravatar头像">
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 25px 0;">
+            <h3 style="margin-bottom: 15px; font-size: 1.1rem;">管理员账号（用于登录后台）</h3>
+
+            <div class="form-group">
+                <label>后台账号</label>
+                <input type="text" id="adminUser" class="form-control" placeholder="admin" required>
+            </div>
+            <div class="form-group">
+                <label>后台密码</label>
+                <input type="password" id="adminPass" class="form-control" required>
+            </div>
+            
+            <button type="submit" class="btn" id="submitBtn" style="margin-top: 10px;">一键安装</button>
+        </form>
+    </div>
+
+    <script>
+        function toggleMySQLFields() {
+            const dbType = document.getElementById('dbType').value;
+            document.getElementById('mysqlFields').style.display = dbType === 'mysql' ? 'block' : 'none';
+        }
+
+        document.getElementById('installForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = '正在初始化...';
+
+            const payload = {
+                dbType: document.getElementById('dbType').value,
+                dbHost: document.getElementById('dbHost').value,
+                dbPort: document.getElementById('dbPort').value,
+                dbName: document.getElementById('dbName').value,
+                dbUser: document.getElementById('dbUser').value,
+                dbPass: document.getElementById('dbPass').value,
+                siteTitle: document.getElementById('siteTitle').value,
+                authorName: document.getElementById('authorName').value,
+                authorBio: document.getElementById('authorBio').value,
+                adminEmail: document.getElementById('adminEmail').value,
+                adminUser: document.getElementById('adminUser').value,
+                adminPass: document.getElementById('adminPass').value
+            };
+
+            try {
+                const res = await fetch('/install/api/setup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await res.json();
+                if (data.success) {
+                    btn.innerText = '安装成功！正在重启...';
+                    setTimeout(() => {
+                        window.location.href = '/admin/login.html';
+                    }, 2000);
+                } else {
+                    alert('安装失败：' + data.error);
+                    btn.disabled = false;
+                    btn.innerText = '一键安装';
+                }
+            } catch (err) {
+                alert('网络错误');
+                btn.disabled = false;
+                btn.innerText = '一键安装';
+            }
+        });
+    </script>
+</body>
+</html>

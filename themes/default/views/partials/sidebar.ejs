@@ -1,0 +1,86 @@
+<!-- Column: Sidebar -->
+<aside class="sidebar">
+    <% if (typeof show_left_cover !== 'undefined' && show_left_cover && typeof post !== 'undefined' && post && post.cover_image && post.show_cover_in_post) { %>
+        <div class="sidebar-cover card" style="margin-bottom: 25px; padding: 10px; text-align: center;">
+            <img src="<%= post.cover_image %>" alt="<%= post.title %>" class="post-cover-img" style="width: 100%; height: auto; border-radius: var(--radius); display: block;">
+        </div>
+    <% } %>
+    <!-- Author Widget -->
+    <div class="widget card author-profile">
+        <img src="<%= site.computed_avatar %>" alt="Avatar" class="author-avatar" style="object-fit: cover;">
+        <h3 class="author-name"><%= site.computed_author_name %></h3>
+        <p class="author-bio"><%= site.computed_author_bio %></p>
+    </div>
+
+    <!-- Search Widget -->
+    <div class="widget card" style="padding: 15px;">
+        <form action="/search" method="GET" style="display: flex; gap: 8px; margin: 0;">
+            <input type="text" name="q" placeholder="搜索文章..." required style="flex: 1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: var(--radius); outline: none; background: transparent; color: inherit; font-size: 0.9rem;">
+            <button type="submit" style="padding: 8px 15px; background: var(--primary); color: white; border: none; border-radius: var(--radius); cursor: pointer; font-size: 0.9rem; font-weight: 600;">搜索</button>
+        </form>
+    </div>
+
+    <!-- Categories Widget -->
+    <div class="widget card">
+        <h3 class="widget-title"><i class="ri-folder-line"></i> 分类目录</h3>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.95rem;">
+            <% if (sidebar.categories.length === 0) { %>
+                <li style="color:var(--text-muted)">暂无分类</li>
+            <% } %>
+            <% sidebar.categories.forEach(cat => { %>
+                <li><a href="/category/<%= cat.slug %>"><%= cat.name %></a></li>
+            <% }) %>
+        </ul>
+    </div>
+
+    <!-- Tags Widget -->
+    <div class="widget card">
+        <h3 class="widget-title"><i class="ri-price-tag-3-line"></i> 标签云</h3>
+        <div class="tag-cloud" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+            <% if (sidebar.tags.length === 0) { %>
+                <span style="color:var(--text-muted)">暂无标签</span>
+            <% } %>
+            <% sidebar.tags.forEach(tag => { %>
+                <a href="/tag/<%= encodeURIComponent(tag.slug) %>" class="default-tag"><%= tag.name %></a>
+            <% }) %>
+        </div>
+    </div>
+
+    <!-- Recent Posts Widget -->
+    <div class="widget card">
+        <h3 class="widget-title"><i class="ri-article-line"></i> 最新文章</h3>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.95rem;">
+            <% if (sidebar.recentPosts.length === 0) { %>
+                <li style="color:var(--text-muted)">暂无文章</li>
+            <% } %>
+            <% sidebar.recentPosts.forEach(post => { %>
+                <li><a href="/post/<%= post.slug %>"><%= post.title %></a></li>
+            <% }) %>
+        </ul>
+    </div>
+
+    <!-- Recent Comments Widget -->
+    <div class="widget card">
+        <h3 class="widget-title"><i class="ri-chat-3-line"></i> 最近回复</h3>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem;">
+            <% if (sidebar.recentComments.length === 0) { %>
+                <li style="color:var(--text-muted)">暂无评论</li>
+            <% } %>
+            <% sidebar.recentComments.forEach(comment => { %>
+                <li style="border-bottom: 1px dashed var(--border-color); padding-bottom: 5px;">
+                    <span style="color:var(--primary); font-weight:600;"><%= comment.author_name %></span>: 
+                    <span style="color:var(--text-muted);"><%= comment.content.substring(0, 20) + '...' %></span>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+
+    <!-- Meta Widget -->
+    <div class="widget card">
+        <h3 class="widget-title"><i class="ri-more-fill"></i> 其它</h3>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.95rem;">
+            <li><a href="/admin">登录后台</a></li>
+            <li><a href="/feed">文章 RSS</a></li>
+        </ul>
+    </div>
+</aside>
