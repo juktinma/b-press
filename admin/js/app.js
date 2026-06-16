@@ -381,9 +381,7 @@ class App {
         
         this.root.innerHTML += html;
     }
-        html += `</tbody></table></div>`;
-        this.root.innerHTML += html;
-    }
+
 
     async updateComment(id, status, page = 1) {
         await api.put(`/comments/${id}/status`, { status });
