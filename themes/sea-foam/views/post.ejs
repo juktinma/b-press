@@ -135,35 +135,30 @@
                     <button id="reply-cancel-btn" onclick="appCancelReply()" style="display:none; background: none; border: 1px solid var(--border-color); padding: 2px 8px; border-radius: 4px; cursor: pointer; color: var(--text-muted); font-size: 0.75rem;">取消回复</button>
                 </h4>
                 
-                <form action="/comment" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+                <form action="/comment" method="POST" class="custom-comment-form" style="display: flex; flex-direction: column; gap: 20px;">
                     <input type="hidden" name="post_id" value="<%= post.id %>">
                     <input type="hidden" name="parent_id" id="comment-parent-id" value="">
                     
-                    <!-- Honeypot anti-spam -->
                     <input type="text" name="honeypot" style="display:none" tabindex="-1" autocomplete="off">
 
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label style="font-size: 0.9rem; color: var(--text-muted);">称呼 <span style="color:red;">*</span></label>
-                            <input type="text" name="author_name" required style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: var(--radius); outline: none; background: transparent; color: inherit;" placeholder="您的昵称">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div class="form-input-group">
+                            <input type="text" name="author_name" required placeholder="称呼 (必填)" style="width: 100%; padding: 12px 15px; border: 2px solid rgba(255,255,255,0.3); border-radius: 12px; outline: none; background: rgba(255,255,255,0.4); backdrop-filter: blur(4px); color: var(--text-main); font-size: 0.95rem; transition: all 0.3s;" onfocus="this.style.borderColor='var(--primary)'; this.style.background='rgba(255,255,255,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.background='rgba(255,255,255,0.4)'">
                         </div>
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label style="font-size: 0.9rem; color: var(--text-muted);">电子邮箱</label>
-                            <input type="email" name="author_email" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: var(--radius); outline: none; background: transparent; color: inherit;" placeholder="用于展示头像 (可选)">
+                        <div class="form-input-group">
+                            <input type="email" name="author_email" placeholder="邮箱 (选填)" style="width: 100%; padding: 12px 15px; border: 2px solid rgba(255,255,255,0.3); border-radius: 12px; outline: none; background: rgba(255,255,255,0.4); backdrop-filter: blur(4px); color: var(--text-main); font-size: 0.95rem; transition: all 0.3s;" onfocus="this.style.borderColor='var(--primary)'; this.style.background='rgba(255,255,255,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.background='rgba(255,255,255,0.4)'">
                         </div>
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label style="font-size: 0.9rem; color: var(--text-muted);">个人网站</label>
-                            <input type="url" name="author_url" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: var(--radius); outline: none; background: transparent; color: inherit;" placeholder="以http://或https://开头 (可选)">
+                        <div class="form-input-group">
+                            <input type="url" name="author_url" placeholder="网站 http:// (选填)" style="width: 100%; padding: 12px 15px; border: 2px solid rgba(255,255,255,0.3); border-radius: 12px; outline: none; background: rgba(255,255,255,0.4); backdrop-filter: blur(4px); color: var(--text-main); font-size: 0.95rem; transition: all 0.3s;" onfocus="this.style.borderColor='var(--primary)'; this.style.background='rgba(255,255,255,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.background='rgba(255,255,255,0.4)'">
                         </div>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 5px;">
-                        <label style="font-size: 0.9rem; color: var(--text-muted);">内容 <span style="color:red;">*</span></label>
-                        <textarea name="content" required style="width: 100%; height: 120px; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--radius); resize: vertical; outline: none; line-height: 1.6; background: transparent; color: inherit;" placeholder="在这里写下您的评论内容..."></textarea>
+                    <div class="form-input-group">
+                        <textarea name="content" required placeholder="在这里写下您的精彩评论..." style="width: 100%; height: 140px; padding: 15px; border: 2px solid rgba(255,255,255,0.3); border-radius: 12px; resize: vertical; outline: none; line-height: 1.6; background: rgba(255,255,255,0.4); backdrop-filter: blur(4px); color: var(--text-main); font-size: 1rem; transition: all 0.3s;" onfocus="this.style.borderColor='var(--primary)'; this.style.background='rgba(255,255,255,0.6)'" onblur="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.background='rgba(255,255,255,0.4)'"></textarea>
                     </div>
 
-                    <div>
-                        <button type="submit" style="padding: 8px 25px; border-radius: var(--radius); background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 600; transition: background 0.2s;">提交评论</button>
+                    <div style="text-align: right;">
+                        <button type="submit" style="padding: 12px 35px; border-radius: 25px; background: var(--primary); color: white; border: none; cursor: pointer; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3); transition: transform 0.2s, box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 15px rgba(14, 165, 233, 0.4)'" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 10px rgba(14, 165, 233, 0.3)'">✨ 发布评论</button>
                     </div>
                 </form>
             </div>
