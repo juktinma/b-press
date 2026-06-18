@@ -26,7 +26,13 @@ router.post('/login', async (req, res) => {
             display_name: admin.display_name
         };
 
-        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
+        let config = {};
+        try {
+            config = require('../config.json');
+        } catch (e) {}
+        const expiresIn = config.jwtExpiresIn || '7d';
+
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
 
         res.json({ token, user: payload });
     } catch (err) {

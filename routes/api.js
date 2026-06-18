@@ -27,9 +27,15 @@ const storage = multer.diskStorage({
         cb(null, uniqueSuffix + path.extname(file.originalname));
     }
 });
+let config = {};
+try {
+    config = require('../config.json');
+} catch (e) {}
+const maxUploadSize = (config.maxUploadSizeMB || 5) * 1024 * 1024;
+
 const upload = multer({ 
     storage,
-    limits: { fileSize: 5 * 1024 * 1024 },
+    limits: { fileSize: maxUploadSize },
     fileFilter: (req, file, cb) => {
         const allowedTypes = /jpeg|jpg|png|gif|webp|svg/i;
         const extname = allowedTypes.test(path.extname(file.originalname));
