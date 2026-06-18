@@ -69,8 +69,16 @@ app.use('/api/themes', require('./routes/api-theme'));
 // Frontend Routes
 app.use('/', require('./routes/frontend'));
 
-// Define PORT
-const PORT = process.env.PORT || 3000;
+// Load global config
+let config = {};
+try {
+    config = require('./config.json');
+} catch (e) {
+    console.warn('No config.json found or invalid format, using defaults.');
+}
+
+// Define PORT (Priority: .env -> config.json -> 3000)
+const PORT = process.env.PORT || config.port || 3000;
 
 const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

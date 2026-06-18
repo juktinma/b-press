@@ -21,7 +21,7 @@ router.post('/api/setup', async (req, res) => {
         const { dbType, dbHost, dbPort, dbUser, dbPass, dbName, siteTitle, authorName, authorBio, adminEmail, adminUser, adminPass } = req.body;
         
         // 1. Write to .env
-        let envContent = `PORT=3000\n`;
+        let envContent = '';
         const crypto = require('crypto');
         const jwtSecret = crypto.randomBytes(64).toString('hex');
         envContent += `JWT_SECRET=${jwtSecret}\n`;
