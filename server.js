@@ -2,8 +2,8 @@ const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
 
-// Force Timezone to GMT+8
-process.env.TZ = 'Asia/Shanghai';
+// Timezone is dynamically set from settings, but default to UTC if not set.
+// process.env.TZ will be updated when settings are loaded.
 
 // Load env vars
 dotenv.config();
@@ -50,23 +50,12 @@ app.use('/install', require('./routes/install'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'themes'));
 
-// Set static folders
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/admin', express.static(path.join(__dirname, 'admin')));
-
-// Serve theme assets
-app.use('/theme-assets/:theme', (req, res, next) => {
-    express.static(path.join(__dirname, 'themes', req.params.theme, 'assets'))(req, res, next);
-});
-
-const themeMiddleware = require('./middleware/theme');
-
-// Apply Theme Middleware
-app.use(themeMiddleware);
-
 // CSRF Middleware
 const crypto = require('crypto');
 app.use((req, res, next) => {
+    if (req.method === 'GET' && req.path.match(/\.(css|js|png|jpg|jpeg|gif|ico|woff|woff2|ttf|svg)$/i)) {
+        return next();
+    }
     let csrfCookie = '';
     if (req.headers.cookie) {
         const match = req.headers.cookie.match(/(?:^|; )csrf_token=([^;]+)/);
@@ -89,6 +78,20 @@ app.use((req, res, next) => {
     next();
 });
 
+// Set static folders
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/admin', express.static(path.join(__dirname, 'admin')));
+
+// Serve theme assets
+app.use('/theme-assets/:theme', (req, res, next) => {
+    express.static(path.join(__dirname, 'themes', req.params.theme, 'assets'))(req, res, next);
+});
+
+const themeMiddleware = require('./middleware/theme');
+
+// Apply Theme Middleware
+app.use(themeMiddleware);
+
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api', require('./routes/api'));
@@ -108,17 +111,29 @@ try {
 // Define PORT (Priority: .env -> config.json -> 3000)
 const PORT = process.env.PORT || config.port || 3000;
 
-const server = app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
-// Graceful shutdown
-const shutdown = () => {
-    console.log('Signal received: closing HTTP server');
-    server.close(() => {
-        console.log('HTTP server closed');
-        process.exit(0);
+const Setting = require('./models/setting');
+Setting.getAll().then(settings => {
+    if (settings.timezone) {
+        process.env.TZ = settings.timezone;
+    } else {
+        process.env.TZ = 'Asia/Shanghai'; // default
+    }
+    
+    const server = app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
     });
-};
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
+
+    // Graceful shutdown
+    const shutdown = () => {
+        console.log('Signal received: closing HTTP server');
+        server.close(() => {
+            console.log('HTTP server closed');
+            process.exit(0);
+        });
+    };
+    process.on('SIGTERM', shutdown);
+    process.on('SIGINT', shutdown);
+}).catch(err => {
+    console.error('Failed to load settings on boot:', err);
+    process.exit(1);
+});

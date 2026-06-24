@@ -830,6 +830,19 @@ class App {
                     <label>JWT过期时间 (如: 7d, 24h)</label>
                     <input type="text" id="jwt_expires_in" class="form-control" value="${settings.jwt_expires_in || '7d'}">
                 </div>
+                <div class="form-group">
+                    <label>时区 (Timezone)</label>
+                    <select id="timezone" class="form-control">
+                        <option value="Asia/Shanghai" ${(!settings.timezone || settings.timezone === 'Asia/Shanghai') ? 'selected' : ''}>北京时间 (Asia/Shanghai)</option>
+                        <option value="Asia/Hong_Kong" ${settings.timezone === 'Asia/Hong_Kong' ? 'selected' : ''}>香港时间 (Asia/Hong_Kong)</option>
+                        <option value="Asia/Taipei" ${settings.timezone === 'Asia/Taipei' ? 'selected' : ''}>台北时间 (Asia/Taipei)</option>
+                        <option value="Asia/Tokyo" ${settings.timezone === 'Asia/Tokyo' ? 'selected' : ''}>东京时间 (Asia/Tokyo)</option>
+                        <option value="Europe/London" ${settings.timezone === 'Europe/London' ? 'selected' : ''}>伦敦时间 (Europe/London)</option>
+                        <option value="America/New_York" ${settings.timezone === 'America/New_York' ? 'selected' : ''}>纽约时间 (America/New_York)</option>
+                        <option value="America/Los_Angeles" ${settings.timezone === 'America/Los_Angeles' ? 'selected' : ''}>洛杉矶时间 (America/Los_Angeles)</option>
+                        <option value="UTC" ${settings.timezone === 'UTC' ? 'selected' : ''}>协调世界时 (UTC)</option>
+                    </select>
+                </div>
 
                 <hr style="border:0; border-top:1px solid var(--admin-border); margin: 25px 0;">
                 <h3>外观设置</h3>
@@ -938,6 +951,7 @@ class App {
             site_keywords: document.getElementById('site_keywords').value,
             site_favicon: document.getElementById('site_favicon').value,
             jwt_expires_in: document.getElementById('jwt_expires_in').value,
+            timezone: document.getElementById('timezone').value,
             author_name: document.getElementById('author_name').value,
             author_bio: document.getElementById('author_bio').value,
             admin_email: document.getElementById('admin_email').value,

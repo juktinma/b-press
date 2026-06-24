@@ -258,6 +258,9 @@ router.get('/settings', async (req, res) => {
 router.put('/settings', async (req, res) => {
     for (const [key, value] of Object.entries(req.body)) {
         await Setting.set(key, value);
+        if (key === 'timezone') {
+            process.env.TZ = value;
+        }
     }
     res.json({ success: true });
 });
