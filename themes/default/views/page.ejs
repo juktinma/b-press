@@ -85,6 +85,7 @@
                 <form action="/comment" method="POST" class="custom-comment-form" style="display: flex; flex-direction: column; gap: 20px;">
                     <input type="hidden" name="page_id" value="<%= page.id %>">
                     <input type="hidden" name="parent_id" id="comment-parent-id" value="">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     
                     <!-- Honeypot anti-spam -->
                     <input type="text" name="honeypot" style="display:none" tabindex="-1" autocomplete="off">

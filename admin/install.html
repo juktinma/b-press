@@ -92,7 +92,7 @@
 <body>
     <div class="install-card">
         <div class="header">
-            <h1>欢迎使用 B-Press 🚀</h1>
+            <h1>欢迎使用 B-Press</h1>
             <p>只需几步，开启您的博客之旅</p>
         </div>
         <form id="installForm">
@@ -118,7 +118,7 @@
                 </div>
                 <div class="form-group">
                     <label>数据库名 (DB Name)</label>
-                    <input type="text" id="dbName" class="form-control" value="bgsnblog">
+                    <input type="text" id="dbName" class="form-control" value="yourblog">
                 </div>
                 <div class="form-group">
                     <label>用户名 (User)</label>
@@ -150,7 +150,7 @@
                 <input type="text" id="authorBio" class="form-control" placeholder="例如：热爱代码与生活的创造者。">
             </div>
             <div class="form-group">
-                <label>管理员邮箱</label>
+                <label>管理员邮箱 （可选）</label>
                 <input type="email" id="adminEmail" class="form-control" placeholder="用于接收通知及关联Gravatar头像">
             </div>
 
@@ -158,12 +158,14 @@
             <h3 style="margin-bottom: 15px; font-size: 1.1rem;">管理员账号（用于登录后台）</h3>
 
             <div class="form-group">
-                <label>后台账号</label>
+                <label>后台账号名</label>
                 <input type="text" id="adminUser" class="form-control" placeholder="admin" required>
             </div>
             <div class="form-group">
                 <label>后台密码</label>
-                <input type="password" id="adminPass" class="form-control" required>
+                <input type="password" id="adminPass" class="form-control" required oninput="checkPasswordStrength(this.value, 'pwdStrengthMeter', 'pwdStrengthText')">
+                <div id="pwdStrengthMeter" style="margin-top: 5px; height: 5px; background: #e2e8f0; border-radius: 3px; overflow: hidden;"><div style="width: 0%; height: 100%; transition: width 0.3s, background-color 0.3s;"></div></div>
+                <div id="pwdStrengthText" style="font-size: 0.8rem; margin-top: 5px; color: var(--text-muted);"></div>
             </div>
             
             <button type="submit" class="btn" id="submitBtn" style="margin-top: 10px;">一键安装</button>
@@ -171,6 +173,41 @@
     </div>
 
     <script>
+        function checkPasswordStrength(password, meterId, textId) {
+            let strength = 0;
+            if (password.length >= 8) strength += 1;
+            if (password.match(/[a-z]+/)) strength += 1;
+            if (password.match(/[A-Z]+/)) strength += 1;
+            if (password.match(/[0-9]+/)) strength += 1;
+            if (password.match(/[^a-zA-Z0-9]+/)) strength += 1;
+
+            const meter = document.getElementById(meterId).firstElementChild;
+            const text = document.getElementById(textId);
+            
+            if (password.length === 0) {
+                meter.style.width = '0%';
+                if(text) text.innerText = '';
+                return;
+            }
+
+            if (strength <= 2) {
+                meter.style.width = '33%';
+                meter.style.backgroundColor = '#ef4444';
+                if(text) text.innerText = '弱: 建议包含大小写字母、数字和特殊字符，并至少8位';
+                if(text) text.style.color = '#ef4444';
+            } else if (strength === 3 || strength === 4) {
+                meter.style.width = '66%';
+                meter.style.backgroundColor = '#f59e0b';
+                if(text) text.innerText = '中: 还可以更强';
+                if(text) text.style.color = '#f59e0b';
+            } else {
+                meter.style.width = '100%';
+                meter.style.backgroundColor = '#10b981';
+                if(text) text.innerText = '强: 密码很安全';
+                if(text) text.style.color = '#10b981';
+            }
+        }
+
         function toggleMySQLFields() {
             const dbType = document.getElementById('dbType').value;
             document.getElementById('mysqlFields').style.display = dbType === 'mysql' ? 'block' : 'none';

@@ -109,6 +109,6 @@ CREATE TABLE IF NOT EXISTS theme_settings (
 
 -- Initialize basic settings
 INSERT IGNORE INTO settings (`key`, `value`) VALUES 
-('site_title', 'Bgsn Blog'),
+('site_title', 'B-Press Blog'),
 ('site_description', 'My awesome custom blog'),
-('active_theme', 'sea-foam');
+('active_theme', 'default');

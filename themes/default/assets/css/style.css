@@ -65,7 +65,7 @@ a:hover {
     min-height: var(--header-height, 80px);
     display: flex;
     align-items: center;
-    background: var(--card-bg);
+    background: #ffffff;
     border-bottom: 2px solid var(--primary);
     margin-bottom: 40px;
 }
@@ -408,8 +408,7 @@ a:hover {
         top: 100%;
         left: 0;
         width: 100%;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
+        background: #ffffff;
         flex-direction: column;
         padding: 20px;
         border-bottom: 1px solid var(--border-color);

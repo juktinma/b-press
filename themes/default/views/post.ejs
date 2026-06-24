@@ -130,6 +130,7 @@ const isLeftLayout = themeConfig.post_cover_mode === 'left_cover_sidebar_left';
                 <form action="/comment" method="POST" class="custom-comment-form" style="display: flex; flex-direction: column; gap: 20px;">
                     <input type="hidden" name="post_id" value="<%= post.id %>">
                     <input type="hidden" name="parent_id" id="comment-parent-id" value="">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     
                     <!-- Honeypot anti-spam -->
                     <input type="text" name="honeypot" style="display:none" tabindex="-1" autocomplete="off">

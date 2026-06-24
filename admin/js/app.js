@@ -152,8 +152,8 @@ class App {
                             ${stats.recentComments.length === 0 ? '<li style="color:var(--admin-text-muted)">暂无回复</li>' : ''}
                             ${stats.recentComments.map(c => `
                                 <li style="margin-bottom: 10px; border-bottom: 1px dashed var(--admin-border); padding-bottom: 8px;">
-                                    <strong style="color: var(--admin-primary);">${c.author_name}</strong>: 
-                                    <span style="color: var(--admin-text);">${c.content.substring(0, 30) + '...'}</span>
+                                    <strong style="color: var(--admin-primary);">${DOMPurify.sanitize(c.author_name)}</strong>: 
+                                    <span style="color: var(--admin-text);">${DOMPurify.sanitize(c.content).substring(0, 30) + '...'}</span>
                                     <div style="color: var(--admin-text-muted); font-size: 0.85rem; margin-top: 4px;">${new Date(c.created_at).toLocaleDateString()}</div>
                                 </li>
                             `).join('')}
@@ -199,8 +199,9 @@ class App {
         const catOptions = cats.map(c => `<option value="${c.id}" ${post.category_id == c.id ? 'selected' : ''}>${c.name}</option>`).join('');
 
         this.root.innerHTML = `
-            <div class="page-header">
+            <div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
                 <h2>${id ? '编辑文章' : '撰写新文章'}</h2>
+                <label class="btn" style="cursor:pointer; background:var(--admin-border); color:var(--admin-text); margin-bottom:0;">导入 Markdown<input type="file" style="display:none" accept=".md" onchange="app.importMarkdown(this)"></label>
             </div>
             <div style="display:flex; gap: 20px;">
                 <div style="flex: 3;">
@@ -262,6 +263,24 @@ class App {
             </div>
         `;
         setTimeout(() => { window.postEditor.init('post-content'); this.loadAttachments(); }, 100);
+    }
+
+    importMarkdown(input) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const content = e.target.result;
+            const title = file.name.replace(/\.md$/i, '');
+            document.getElementById('post-title').value = title;
+            if (window.postEditor && window.postEditor.mde) {
+                window.postEditor.mde.value(content);
+            } else {
+                document.getElementById('post-content').value = content;
+            }
+            input.value = ''; // reset
+        };
+        reader.readAsText(file);
     }
 
     async savePost(id) {
@@ -357,8 +376,8 @@ class App {
         data.comments.forEach(c => {
             const statusBadge = c.status === 'approved' ? '<span style="color:#10b981">已通过</span>' : '<span style="color:#f59e0b">待审</span>';
             html += `<tr>
-                <td><strong>${c.author_name}</strong><br><small>${c.author_email || ''}</small></td>
-                <td style="max-width:300px;">${c.content}</td>
+                <td><strong>${DOMPurify.sanitize(c.author_name)}</strong><br><small>${DOMPurify.sanitize(c.author_email || '')}</small></td>
+                <td style="max-width:300px;">${DOMPurify.sanitize(c.content)}</td>
                 <td>${statusBadge}</td>
                 <td>${new Date(c.created_at).toLocaleDateString()}</td>
                 <td>
@@ -679,7 +698,9 @@ class App {
                 </div>
                 <div class="form-group">
                     <label>新密码（留空则不修改密码）</label>
-                    <input type="password" id="profile_new_password" class="form-control">
+                    <input type="password" id="profile_new_password" class="form-control" oninput="app.checkPasswordStrength(this.value, 'pwdStrengthMeter', 'pwdStrengthText')">
+                    <div id="pwdStrengthMeter" style="margin-top: 5px; height: 5px; background: #e2e8f0; border-radius: 3px; overflow: hidden;"><div style="width: 0%; height: 100%; transition: width 0.3s, background-color 0.3s;"></div></div>
+                    <div id="pwdStrengthText" style="font-size: 0.8rem; margin-top: 5px; color: var(--admin-text-muted);"></div>
                 </div>
                 <div class="form-group">
                     <label>确认新密码</label>
@@ -696,7 +717,7 @@ class App {
                 </div>
                 <div class="form-group">
                     <label>站点地址 (URL)</label>
-                    <input type="url" id="site_url" class="form-control" value="${settings.site_url || 'https://blog.bgsnd.com'}" placeholder="例如: https://blog.bgsnd.com">
+                    <input type="url" id="site_url" class="form-control" value="${settings.site_url || ''}" placeholder="例如: https://www.example.com">
                 </div>
                 <div class="form-group">
                     <label>站点描述</label>
@@ -704,7 +725,7 @@ class App {
                 </div>
                 <div class="form-group">
                     <label>关键词</label>
-                    <input type="text" id="site_keywords" class="form-control" value="${settings.site_keywords || 'typecho,php,blog'}" placeholder="请以半角逗号 , 分割多个关键字">
+                    <input type="text" id="site_keywords" class="form-control" value="${settings.site_keywords || 'nodejs,blog'}" placeholder="请以半角逗号 , 分割多个关键字">
                 </div>
 
                 <hr style="border:0; border-top:1px solid var(--admin-border); margin: 25px 0;">
@@ -742,6 +763,11 @@ class App {
                 </div>
 
                 <hr style="border:0; border-top:1px solid var(--admin-border); margin: 25px 0;">
+                <h3>首页图片轮播管理</h3>
+                <div id="carousel-items-container" style="margin-top:15px;"></div>
+                <button class="btn" style="margin-top:10px; background:#e2e8f0; color:#334155;" onclick="app.addCarouselItem()">+ 添加轮播项</button>
+
+                <hr style="border:0; border-top:1px solid var(--admin-border); margin: 25px 0;">
                 <h3>外观设置</h3>
                 <div class="form-group" style="margin-top:15px;">
                     <label>博客前台主题</label>
@@ -763,6 +789,12 @@ class App {
                 <button class="btn" style="margin-top:15px;" onclick="app.saveSettings()">保存设置</button>
             </div>
         `;
+
+        let carousels = [];
+        try { carousels = JSON.parse(settings.carousel_images || '[]'); } catch(e){}
+        setTimeout(() => {
+            carousels.forEach(c => this.addCarouselItem(c.image, c.title, c.link));
+        }, 100);
     }
 
     async saveProfile() {
@@ -800,6 +832,40 @@ class App {
         }
     }
 
+    checkPasswordStrength(password, meterId, textId) {
+        let strength = 0;
+        if (password.length >= 8) strength += 1;
+        if (password.match(/[a-z]+/)) strength += 1;
+        if (password.match(/[A-Z]+/)) strength += 1;
+        if (password.match(/[0-9]+/)) strength += 1;
+        if (password.match(/[^a-zA-Z0-9]+/)) strength += 1;
+
+        const meterContainer = document.getElementById(meterId);
+        const text = document.getElementById(textId);
+        if (!meterContainer) return;
+        const meter = meterContainer.firstElementChild;
+        
+        if (password.length === 0) {
+            meter.style.width = '0%';
+            if(text) text.innerText = '';
+            return;
+        }
+
+        if (strength <= 2) {
+            meter.style.width = '33%';
+            meter.style.backgroundColor = '#ef4444';
+            if(text) { text.innerText = '弱: 建议包含大小写字母、数字和特殊字符，并至少8位'; text.style.color = '#ef4444'; }
+        } else if (strength === 3 || strength === 4) {
+            meter.style.width = '66%';
+            meter.style.backgroundColor = '#f59e0b';
+            if(text) { text.innerText = '中: 还可以更强'; text.style.color = '#f59e0b'; }
+        } else {
+            meter.style.width = '100%';
+            meter.style.backgroundColor = '#10b981';
+            if(text) { text.innerText = '强: 密码很安全'; text.style.color = '#10b981'; }
+        }
+    }
+
     async saveSettings() {
         const payload = {
             site_title: document.getElementById('site_title').value,
@@ -811,14 +877,41 @@ class App {
             admin_email: document.getElementById('admin_email').value,
             avatar_mode: document.getElementById('avatar_mode').value,
             avatar_custom_url: document.getElementById('avatar_custom_url').value,
-            footer_html: document.getElementById('footer_html').value,
+            footer_html: DOMPurify.sanitize(document.getElementById('footer_html').value),
             active_theme: document.getElementById('active_theme').value,
             admin_theme_mode: document.getElementById('admin_theme_mode').value,
             admin_theme_color: document.getElementById('admin_theme_color').value
         };
+
+        const carouselNodes = document.querySelectorAll('.carousel-item-row');
+        if (carouselNodes.length > 0 || document.getElementById('carousel-items-container')) {
+            const carousels = Array.from(carouselNodes).map(node => ({
+                image: node.querySelector('.c-image').value,
+                title: node.querySelector('.c-title').value,
+                link: node.querySelector('.c-link').value
+            }));
+            payload.carousel_images = JSON.stringify(carousels);
+        }
+
         await api.put('/settings', payload);
         if (window.applyAdminTheme) window.applyAdminTheme(payload);
         alert('设置已保存！界面已刷新。');
+    }
+
+    addCarouselItem(image = '', title = '', link = '') {
+        const container = document.getElementById('carousel-items-container');
+        if(!container) return;
+        const div = document.createElement('div');
+        div.className = 'carousel-item-row';
+        div.style.cssText = 'display:flex; gap:10px; margin-bottom:10px; align-items:center; background:#f8fafc; padding:10px; border:1px solid var(--admin-border); border-radius:4px;';
+        const esc = (str) => (str||'').replace(/"/g, '&quot;');
+        div.innerHTML = `
+            <input type="text" class="form-control c-image" placeholder="图片URL" value="${esc(image)}" style="flex:2;">
+            <input type="text" class="form-control c-title" placeholder="标题" value="${esc(title)}" style="flex:2;">
+            <input type="text" class="form-control c-link" placeholder="链接(可选)" value="${esc(link)}" style="flex:2;">
+            <button class="action-btn danger" onclick="this.parentNode.remove()">删除</button>
+        `;
+        container.appendChild(div);
     }
 
     renderThemes() {

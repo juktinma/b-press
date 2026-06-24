@@ -61,6 +61,31 @@ const themeMiddleware = require('./middleware/theme');
 // Apply Theme Middleware
 app.use(themeMiddleware);
 
+// CSRF Middleware
+const crypto = require('crypto');
+app.use((req, res, next) => {
+    let csrfCookie = '';
+    if (req.headers.cookie) {
+        const match = req.headers.cookie.match(/(?:^|; )csrf_token=([^;]+)/);
+        if (match) csrfCookie = match[1];
+    }
+    if (!csrfCookie) {
+        csrfCookie = crypto.randomBytes(16).toString('hex');
+        res.setHeader('Set-Cookie', `csrf_token=${csrfCookie}; Path=/; SameSite=Lax`);
+    }
+    if (req.method === 'POST') {
+        const path = req.path;
+        if (path === '/comment' || path === '/api/auth/login') {
+            const token = req.body._csrf || req.headers['x-csrf-token'];
+            if (!token || token !== csrfCookie) {
+                return res.status(403).json({ error: 'CSRF Token Invalid or Missing' });
+            }
+        }
+    }
+    res.locals.csrfToken = csrfCookie;
+    next();
+});
+
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api', require('./routes/api'));
