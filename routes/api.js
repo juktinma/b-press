@@ -37,17 +37,54 @@ const upload = multer({
     storage,
     limits: { fileSize: maxUploadSize },
     fileFilter: (req, file, cb) => {
-        const allowedTypes = /jpeg|jpg|png|gif|webp|svg/i;
+        const allowedTypes = /jpeg|jpg|png|gif|webp|svg|pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|7z|txt|md|mp3|mp4|wav/i;
         const extname = allowedTypes.test(path.extname(file.originalname));
-        const mimetype = allowedTypes.test(file.mimetype);
-        if (extname && mimetype) return cb(null, true);
-        cb(new Error('Only image files are allowed!'));
+        if (extname) return cb(null, true);
+        cb(new Error('不允许上传该类型的文件！'));
     }
 });
 
-router.post('/upload', upload.single('image'), (req, res) => {
-    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-    res.json({ url: '/uploads/' + req.file.filename, name: req.file.filename });
+router.post('/upload', async (req, res, next) => {
+    try {
+        const dbSettings = await Setting.getAll();
+        const maxSize = parseInt(dbSettings.max_upload_size) || 5;
+        const maxUploadSizeLimit = maxSize * 1024 * 1024;
+        
+        const allowedTypesSetting = dbSettings.allowed_upload_types || 'image';
+        const typeCategories = allowedTypesSetting.split(',');
+        
+        let extensions = [];
+        if (typeCategories.includes('image')) extensions.push('jpeg', 'jpg', 'png', 'gif', 'webp', 'svg');
+        if (typeCategories.includes('document')) extensions.push('pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'md');
+        if (typeCategories.includes('archive')) extensions.push('zip', 'rar', '7z');
+        if (typeCategories.includes('media')) extensions.push('mp3', 'mp4', 'wav');
+        
+        if (extensions.length === 0) extensions.push('jpeg', 'jpg', 'png', 'gif', 'webp', 'svg');
+
+        const allowedRegex = new RegExp('^(' + extensions.join('|') + ')$', 'i');
+
+        const dynamicUpload = multer({ 
+            storage,
+            limits: { fileSize: maxUploadSizeLimit },
+            fileFilter: (req, file, cb) => {
+                const ext = path.extname(file.originalname).substring(1);
+                if (allowedRegex.test(ext)) return cb(null, true);
+                cb(new Error('不允许上传该类型的文件！'));
+            }
+        }).single('image');
+
+        dynamicUpload(req, res, function (err) {
+            if (err instanceof multer.MulterError) {
+                return res.status(400).json({ error: err.message });
+            } else if (err) {
+                return res.status(400).json({ error: err.message });
+            }
+            if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+            res.json({ url: '/uploads/' + req.file.filename, name: req.file.filename });
+        });
+    } catch(err) {
+        next(err);
+    }
 });
 
 router.get('/uploads', (req, res) => {

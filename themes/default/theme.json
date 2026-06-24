@@ -10,6 +10,11 @@
             "type": "boolean",
             "default": true
         },
+        "show_header_icon": {
+            "label": "顶栏显示网站图标",
+            "type": "boolean",
+            "default": true
+        },
         "banner_mode": {
             "label": "Banner 内容模式",
             "type": "select",

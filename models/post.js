@@ -3,15 +3,23 @@ const db = require('../config/db');
 class Post {
     static async findAll({ status = 'published', page = 1, limit = 10 } = {}) {
         const offset = (page - 1) * limit;
-        const [rows] = await db.query(
-            `SELECT p.*, c.name as category_name, c.slug as category_slug 
-             FROM posts p 
-             LEFT JOIN categories c ON p.category_id = c.id 
-             WHERE p.status = ? 
-             ORDER BY p.created_at DESC LIMIT ? OFFSET ?`,
-            [status, limit, offset]
-        );
-        const [countRow] = await db.query('SELECT COUNT(*) as total FROM posts WHERE status = ?', [status]);
+        let query = `SELECT p.*, c.name as category_name, c.slug as category_slug FROM posts p LEFT JOIN categories c ON p.category_id = c.id`;
+        let countQuery = 'SELECT COUNT(*) as total FROM posts';
+        let params = [];
+        let countParams = [];
+        
+        if (status !== 'all') {
+            query += ' WHERE p.status = ?';
+            countQuery += ' WHERE status = ?';
+            params.push(status);
+            countParams.push(status);
+        }
+        
+        query += ' ORDER BY p.created_at DESC LIMIT ? OFFSET ?';
+        params.push(limit, offset);
+
+        const [rows] = await db.query(query, params);
+        const [countRow] = await db.query(countQuery, countParams);
         
         return {
             posts: rows,

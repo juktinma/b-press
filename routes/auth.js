@@ -30,7 +30,9 @@ router.post('/login', async (req, res) => {
         try {
             config = require('../config.json');
         } catch (e) {}
-        const expiresIn = config.jwtExpiresIn || '7d';
+        const Setting = require('../models/setting');
+        const dbSettings = await Setting.getAll();
+        const expiresIn = dbSettings.jwt_expires_in || config.jwtExpiresIn || '7d';
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
 

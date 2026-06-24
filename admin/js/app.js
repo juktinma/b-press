@@ -167,7 +167,7 @@ class App {
 
     async renderPosts() {
         this.root.innerHTML = `<div class="page-header"><h2>文章管理</h2> <a href="#editor" class="btn">写文章</a></div>`;
-        const data = await api.get('/posts?limit=50');
+        const data = await api.get('/posts?status=all&limit=50');
         if (!data) return;
 
         let html = `<div class="table-wrapper"><table><thead><tr><th>标题</th><th>状态</th><th>浏览</th><th>日期</th><th>操作</th></tr></thead><tbody>`;
@@ -442,14 +442,15 @@ class App {
 
     async renderPages() {
         this.root.innerHTML = `<div class="page-header"><h2>独立页面</h2> <a href="#page-editor" class="btn">新建页面</a></div>`;
-        const data = await api.get('/pages');
+        const data = await api.get('/pages?status=all');
         if (!data) return;
 
-        let html = `<div class="table-wrapper"><table><thead><tr><th>标题</th><th>路径</th><th>排序</th><th>导航显示</th><th>操作</th></tr></thead><tbody>`;
+        let html = `<div class="table-wrapper"><table><thead><tr><th>标题</th><th>路径</th><th>状态</th><th>排序</th><th>导航显示</th><th>操作</th></tr></thead><tbody>`;
         data.forEach(p => {
             html += `<tr>
                 <td>${p.title}</td>
                 <td>/page/${p.slug}</td>
+                <td>${p.status || 'published'}</td>
                 <td>${p.sort_order}</td>
                 <td>${p.show_in_nav ? '是' : '否'}</td>
                 <td><a href="#page-editor/${p.id}" class="action-btn">编辑</a> <button class="action-btn danger" onclick="app.deletePage(${p.id})">删除</button></td>
@@ -491,6 +492,12 @@ class App {
                     <div class="table-wrapper" style="padding: 15px;">
                         <h3>页面属性</h3>
                         <div style="margin-top: 15px;">
+                            <label>状态：</label>
+                            <select id="page-status" class="form-control" style="margin-bottom:15px;">
+                                <option value="published" ${page.status === 'published' || !page.status ? 'selected' : ''}>公开 (Published)</option>
+                                <option value="draft" ${page.status === 'draft' ? 'selected' : ''}>隐藏/草稿 (Draft)</option>
+                            </select>
+
                             <label>URL缩略名：</label>
                             <input type="text" id="page-slug" class="form-control" style="margin-bottom:15px;" value="${page.slug || ''}" placeholder="例如: about">
                             
@@ -563,6 +570,7 @@ class App {
             title: title,
             content: window.postEditor.value(),
             slug: slug,
+            status: document.getElementById('page-status').value,
             show_in_nav: document.getElementById('page-nav').value === '1',
             allow_comments: document.getElementById('page-allow-comments').value === '1',
             show_sidebar: document.getElementById('page-show-sidebar').value === '1' ? 1 : 0,
@@ -640,7 +648,38 @@ class App {
     }
 
     async renderFiles() {
-        this.root.innerHTML = `<div class="page-header"><h2>文件管理</h2> <label class="btn" style="cursor:pointer">上传文件<input type="file" style="display:none" onchange="app.uploadStandaloneFile(this)"></label></div>`;
+        const settings = await api.get('/settings');
+        const allowed = (settings.allowed_upload_types || 'image').split(',');
+        
+        const topBar = `
+            <div class="table-wrapper" style="padding: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <h3 style="margin: 0; font-size: 1.1rem; color: var(--admin-primary);">上传设置</h3>
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 10px; align-items: center; border-right: 1px solid var(--admin-border); padding-right: 15px;">
+                        <span>允许类别：</span>
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                            <input type="checkbox" name="upload_types" value="image" checked disabled title="图片上传为必需项"> 图片
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                            <input type="checkbox" name="upload_types" value="document" ${allowed.includes('document') ? 'checked' : ''}> 文档
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                            <input type="checkbox" name="upload_types" value="archive" ${allowed.includes('archive') ? 'checked' : ''}> 压缩包
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                            <input type="checkbox" name="upload_types" value="media" ${allowed.includes('media') ? 'checked' : ''}> 音视频
+                        </label>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label for="max_upload_size" style="margin: 0;">最大尺寸 (MB)：</label>
+                        <input type="number" id="max_upload_size" class="form-control" value="${settings.max_upload_size || 5}" style="width: 80px; margin: 0;">
+                    </div>
+                    <button class="btn" onclick="app.saveUploadTypes()" style="padding: 5px 15px;">保存</button>
+                </div>
+            </div>
+        `;
+
+        this.root.innerHTML = `<div class="page-header"><h2>文件管理</h2> <label class="btn" style="cursor:pointer">上传文件<input type="file" style="display:none" onchange="app.uploadStandaloneFile(this)"></label></div>` + topBar;
         const data = await api.get('/uploads') || [];
         
         let html = `<div class="table-wrapper"><table><thead><tr><th>缩略图</th><th>文件名</th><th>大小</th><th>日期</th><th>操作</th></tr></thead><tbody>`;
@@ -666,6 +705,18 @@ class App {
         if (!input.files || !input.files[0]) return;
         await api.uploadImage(input.files[0]);
         this.renderFiles();
+    }
+
+    async saveUploadTypes() {
+        const checkboxes = document.querySelectorAll('input[name="upload_types"]:checked');
+        const types = Array.from(checkboxes).map(c => c.value);
+        if (!types.includes('image')) types.push('image');
+        const maxSize = document.getElementById('max_upload_size').value || 5;
+        await api.put('/settings', { 
+            allowed_upload_types: types.join(','),
+            max_upload_size: maxSize
+        });
+        alert('上传设置保存成功！');
     }
 
     async deleteFile(name) {
@@ -766,6 +817,17 @@ class App {
                 <h3>首页图片轮播管理</h3>
                 <div id="carousel-items-container" style="margin-top:15px;"></div>
                 <button class="btn" style="margin-top:10px; background:#e2e8f0; color:#334155;" onclick="app.addCarouselItem()">+ 添加轮播项</button>
+
+                <hr style="border:0; border-top:1px solid var(--admin-border); margin: 25px 0;">
+                <h3>基础设置</h3>
+                <div class="form-group" style="margin-top:15px;">
+                    <label>网站图标 (Favicon URL)</label>
+                    <input type="text" id="site_favicon" class="form-control" placeholder="https://example.com/favicon.ico" value="${settings.site_favicon || ''}">
+                </div>
+                <div class="form-group">
+                    <label>JWT过期时间 (如: 7d, 24h)</label>
+                    <input type="text" id="jwt_expires_in" class="form-control" value="${settings.jwt_expires_in || '7d'}">
+                </div>
 
                 <hr style="border:0; border-top:1px solid var(--admin-border); margin: 25px 0;">
                 <h3>外观设置</h3>
@@ -872,6 +934,8 @@ class App {
             site_url: document.getElementById('site_url').value,
             site_description: document.getElementById('site_desc').value,
             site_keywords: document.getElementById('site_keywords').value,
+            site_favicon: document.getElementById('site_favicon').value,
+            jwt_expires_in: document.getElementById('jwt_expires_in').value,
             author_name: document.getElementById('author_name').value,
             author_bio: document.getElementById('author_bio').value,
             admin_email: document.getElementById('admin_email').value,

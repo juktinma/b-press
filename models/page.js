@@ -2,10 +2,14 @@ const db = require('../config/db');
 
 class Page {
     static async findAll({ status = 'published' } = {}) {
-        const [rows] = await db.query(
-            'SELECT * FROM pages WHERE status = ? ORDER BY sort_order ASC, created_at DESC',
-            [status]
-        );
+        let query = 'SELECT * FROM pages';
+        let params = [];
+        if (status !== 'all') {
+            query += ' WHERE status = ?';
+            params.push(status);
+        }
+        query += ' ORDER BY sort_order ASC, created_at DESC';
+        const [rows] = await db.query(query, params);
         return rows;
     }
 
