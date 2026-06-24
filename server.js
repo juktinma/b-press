@@ -2,6 +2,9 @@ const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
 
+// Force Timezone to GMT+8
+process.env.TZ = 'Asia/Shanghai';
+
 // Load env vars
 dotenv.config();
 

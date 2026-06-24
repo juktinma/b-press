@@ -305,7 +305,9 @@ class App {
         };
         const createdAtVal = document.getElementById('post-created-at').value;
         if (createdAtVal) {
-            payload.created_at = createdAtVal.replace('T', ' ') + ':00';
+            // value is local time string from input, e.g. "YYYY-MM-DDTHH:mm"
+            // convert to UTC string for backend storage
+            payload.created_at = new Date(createdAtVal).toISOString().slice(0, 19).replace('T', ' ');
         }
         if (id) {
             await api.put('/posts/' + id, payload);
@@ -581,7 +583,7 @@ class App {
         };
         const createdAtVal = document.getElementById('page-created-at').value;
         if (createdAtVal) {
-            payload.created_at = createdAtVal.replace('T', ' ') + ':00';
+            payload.created_at = new Date(createdAtVal).toISOString().slice(0, 19).replace('T', ' ');
         }
         if (id) {
             await api.put('/pages/' + id, payload);
